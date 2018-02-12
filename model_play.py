@@ -1,29 +1,35 @@
 import numpy as np
 
-
 grid_size = 5
+grid_shape = (grid_size, grid_size)
 
-m = np.zeros((grid_size,grid_size))
-
-# x[0,:] = np.arange(0,5)
-# x[4,:] = np.arange(10,5,-1)
-
-counts = np.arange(grid_size,dtype=np.int)
-stripes = np.arange(grid_size,dtype=np.int)
-# shuffle those stripes ...
-np.random.shuffle(stripes)
-# fill in alternating stripes pattern ...
-for count, stripe in zip(counts,stripes):
-    if count % 2:
-        start = count*grid_size
-        stop  = (count+1)*grid_size
-        m[stripe,:] = np.arange(start,stop)
-    else:
-        start = count*grid_size
-        stop  = (count+1)*grid_size
-        m[stripe,:] = np.arange(stop-1,start-1,step=-1)
-
-
+def fill_grid_with_chain(grid_shape, shuffle_stripes=False, chain_linker=0):
+    # define grid 
+    m = np.zeros(grid_shape,dtype=np.int)
+    # extract dimensions:
+    grid_height, grid_width = grid_shape
+    # "height" defines how many stripes would be there,
+    # "width" determines the length of each stripe.
+    # 
+    # we'll pack a chain parallel to X:
+    stripes = np.arange(grid_height,dtype=np.int)
+    # shuffle those stripes if needed:
+    if shuffle_stripes:
+        np.random.shuffle(stripes)
+    # fill in alternating stripes pattern ...
+    start = 0 # chain index starts with 0:
+    for count, stripe in enumerate(stripes):
+        # stop of the linear/crystal/ordered segment:
+        stop = start + grid_width
+        # layout the chain alternatingly:
+        if not count % 2:
+            m[stripe,:] = np.arange(start,stop).astype(np.int)
+        else:
+            m[stripe,:] = np.arange(stop-1,start-1,step=-1).astype(np.int)
+        # define "start" and "stop" along the folded chain segments:
+        start = stop + chain_linker
+    # return the state of the folded chain:
+    return m
 
 
 
