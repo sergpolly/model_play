@@ -34,6 +34,29 @@ def fill_grid_with_chain(grid_shape, shuffle_stripes=False, chain_linker=0):
 
 
 
+def dist_decay(mm, grid_size, linker):
+    # dist_decay = {}
+    chain_len_approx = grid_size*grid_size+linker*grid_size
+    dist_decay = np.zeros(chain_len_approx, dtype=np.int)
+    # ############################# # ...
+    for i in range(grid_size):
+        for j in range(grid_size):
+            # let's analyze it:
+            center = mm[i,j]
+            if i>0:
+                up = mm[i-1,j]
+                dist_decay[abs(up-center)] += 1
+            if i+1<grid_size:
+                down = mm[i+1,j]
+                dist_decay[abs(down-center)] += 1
+            if j>0:
+                left = mm[i,j-1]
+                dist_decay[abs(left-center)] += 1
+            if j+1<grid_size:
+                right = mm[i,j+1]
+                dist_decay[abs(right-center)] += 1
+    #         dist_decay[]
+    return dist_decay
 
 
 
